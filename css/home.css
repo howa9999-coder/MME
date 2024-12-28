@@ -122,4 +122,10 @@ b{
     .links{
         bottom: 180px;  
     }
+    .para{
+        font-size: 18px;
+    }
+    h2{
+        font-size: 23px;
+    }
 }
