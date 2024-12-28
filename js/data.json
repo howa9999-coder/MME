@@ -1,0 +1,47 @@
+{
+    "geojsonLayers": [
+      {
+        "name": "Lighthouse",
+        "type": "point",
+        "link": "../json/myGeojsonLayers/phares.geojson",
+        "color": "#FF5733"
+      },
+      {
+        "name": "Ports",
+        "type": "point",
+        "link": "../json/myGeojsonLayers/ports.geojson",
+        "color": "#2980B9"
+      },
+      {
+        "name": "Internal Waters",
+        "type": "polygon",
+        "link": "../json/myGeojsonLayers/Internal_waters.geojson",
+        "color": "#3498DB"
+      },
+      {
+        "name": "Territorial Sea",
+        "type": "polygon",
+        "link": "../json/myGeojsonLayers/12NM.geojson",
+        "color": "#2ECC71"
+      },
+      {
+        "name": "Contiguous Zone",
+        "type": "polygon",
+        "link": "../json/myGeojsonLayers/24NM.geojson",
+        "color": "#8E44AD"
+      },
+      {
+        "name": "Exclusive Economic Zone",
+        "type": "polygon",
+        "link": "../json/myGeojsonLayers/ZEEpoly.geojson",
+        "color": "#F1C40F"
+      },
+      {
+        "name": "MPA",
+        "type": "polygon",
+        "link": "../json/myGeojsonLayers/AMP_Maroc.geojson",
+        "color": "#27AE60"
+      }
+    ]
+  }
+  
