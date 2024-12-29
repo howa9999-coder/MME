@@ -33,7 +33,7 @@
         <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
   <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
   <!--CSS FILE-->
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="../css/style.css">
         <style>
             *{
                 padding: 0;
@@ -66,7 +66,7 @@
                 <div class="content search-point">
                     <input type="number" id="lat" placeholder="Lat">
                 <input type="number" id="log" placeholder="Log">
-                <button id="search-point">Search</button>
+                <button id="search-point"><i class="fa-solid fa-magnifying-glass"></i></button>
                 </div>
                 <hr>
             </div>
@@ -84,8 +84,8 @@
                         <option value="miles">miles</option>
                     </select>
                     <div class="btns">
-                        <button id="destination-point">Search</button>
-                        <button id="clear-destination-inputs">Clear</button>
+                        <button id="destination-point"><i class="fa-solid fa-magnifying-glass"></i></button>
+                        <button id="clear-destination-inputs"><i class="fa-regular fa-trash-can"></i></button>
                     </div>
 
 
@@ -99,31 +99,30 @@
                         <option value="">Select Layer</option>
                     </select>
                     <input type="text" placeholder="Search" id="search">
-                    <button id="clear-result">Clear</button>
+                    <button id="clear-result"><i class="fa-regular fa-trash-can"></i></button>
                     <div id="result"></div>
                 </div>
                 <hr>
             </div>
-            <div class="content-container">
+     <!--       <div class="content-container">
                 <h3>Filter Data</h3>
                 <div class="content filter">
-                    <!--draw circle, filer data-->
-                            <input type="text" class="form-control mt-2" id="lat-center" placeholder="Latitude">
-                            <input type="text" class="form-control mt-2" id="lng-center" placeholder="Longitude">
-                            <input type="text" class="form-control mt-2" id="radius" placeholder="Rayon en Km">
-                        <div class="btns">
-                        <button type="submit" class="draw "   id="draw-circle">Draw</button>
-                        <button type="reset" class="clear"   id="clear-circle">Clear</button>
-                        </div>
-                        <div class="layer-select"></div>
+                    <input type="text" class="form-control mt-2" id="lat-center" placeholder="Latitude">
+                    <input type="text" class="form-control mt-2" id="lng-center" placeholder="Longitude">
+                    <input type="text" class="form-control mt-2" id="radius" placeholder="Rayon en Km">
+                <div class="btns">
+                <button type="submit" class="draw "   id="draw-circle"><i class="fa-regular fa-circle-check"></i></button>
+                <button type="reset" class="clear"   id="clear-circle"><i class="fa-regular fa-trash-can"></i></button>
                 </div>
-            <hr>
+                <div class="layer-select"></div>
+        </div>
+    <hr>
 
-                </div>
+        </div>-->
             <div class="content-container">
                 <h3>Download Geojson Layer</h3>
                 <div class="content download">
-                    <!--<a href="json/myGeojsonLayers/AMP/AMP_Maroc.geojson" download="AMP_Maroc.geojson">ddd</a>-->
+                    <!--<a href="json/myGeojsonLayers/AMP/AMP_Maroc.geojson" download="AMP_Maroc.geojson"></a>-->
                 </div>
                 <hr>
             </div>
@@ -133,7 +132,7 @@
                 <div class="content import">
                     <button id="import-geojson">Import GeoJSON</button>
                     <input type="file" id="geojson-file" style="display: none;" accept=".geojson, .json" />
-                    <button id="delete-imported-file">Delete</button>
+                    <button id="delete-imported-file"><i class="fa-regular fa-trash-can"></i></button>
 
                 </div>
                 <hr>
