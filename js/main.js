@@ -1,92 +1,151 @@
-
 // Initialize the map and set the view to Casablanca
 var map = L.map('map').setView([33.5731, -7.5898], 6);
-//Reset view
+
+// Reset view
 document.querySelector("#reset-view").addEventListener("click", function() {
   map.setView([33.5731, -7.5898], 6); // Use setView on the existing map instance
 });
+
 // Add OpenStreetMap as the base layer
 var googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
     maxZoom: 20,
     subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
-}).addTo(map);
+});
 
 var osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 });
 
-var OpenSeaMap = L.tileLayer('https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png', {
-	attribution: 'Map data: &copy; <a href="http://www.openseamap.org">OpenSeaMap</a> contributors'
+var Stadia_AlidadeSmoothDark = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.{ext}', {
+	minZoom: 0,
+	maxZoom: 20,
+	attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+	ext: 'png'
+}).addTo(map);
+
+var CartoDB_DarkMatter = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+	attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+	subdomains: 'abcd',
+	maxZoom: 20
 });
 
+var OpenSeaMap = L.tileLayer('https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png', {
+    attribution: 'Map data: &copy; <a href="http://www.openseamap.org">OpenSeaMap</a> contributors'
+}).addTo(map);
+
 var baseMaps = {
-  "googleSat": googleSat,
+  "Stadia_AlidadeSmoothDark": Stadia_AlidadeSmoothDark,
+  "CartoDB_DarkMatter": CartoDB_DarkMatter,
+    "Google Satellite": googleSat,
     "OpenStreetMap": osm
 };
 
-var overlayMaps = {OpenSeaMap};
+var overlayMaps = {
+  "OpenSeaMap": OpenSeaMap,
+};
 var loadedLayers = {}; // To store loaded layers for searching
 
-// Function to load and process layers
+// GeoJSON data variable
+var dataJson = {
+  "geojsonLayers": [
+    {
+      "name": "Lighthouse",
+      "type": "point",
+      "link": "../json/myGeojsonLayers/phares.geojson",
+      "color": "#FF5733"
+    },
+    {
+      "name": "Ports",
+      "type": "point",
+      "link": "../json/myGeojsonLayers/ports.geojson",
+      "color": "#2980B9"
+    },
+    {
+      "name": "Territorial Sea",
+      "type": "polygon",
+      "link": "../json/myGeojsonLayers/12NM.geojson",
+      "color": "#2ECC71"
+    },
+    {
+      "name": "Internal Waters",
+      "type": "polygon",
+      "link": "../json/myGeojsonLayers/Internal_waters.geojson",
+      "color": "#3498DB"
+    },
+    {
+      "name": "Contiguous Zone",
+      "type": "polygon",
+      "link": "../json/myGeojsonLayers/24NM.geojson",
+      "color": "#8E44AD"
+    },
+    {
+      "name": "Exclusive Economic Zone",
+      "type": "polygon",
+      "link": "../json/myGeojsonLayers/ZEEpoly.geojson",
+      "color": "#F1C40F"
+    },
+    {
+      "name": "MPA",
+      "type": "polygon",
+      "link": "../json/myGeojsonLayers/AMP_Maroc.geojson",
+      "color": "#27AE60"
+    }
+  ]
+};
+
+// Load and process layers
 function loadLayers() {
-    return fetch('../json/data.json') // Replace with the correct path to your JSON file
-        .then(response => {
-            if (!response.ok) throw new Error('Failed to load JSON file');
-            return response.json();
-        })
-        .then(data => {
-            const layerPromises = data.geojsonLayers.map(layerInfo => {
-                return fetch(layerInfo.link)
-                    .then(response => {
-                        if (!response.ok) throw new Error(`Failed to load ${layerInfo.link}`);
-                        return response.json();
-                    })
-                    .then(geojson => {
-                        const layer = L.geoJSON(geojson, {
-                            pointToLayer: (feature, latlng) => {
-                                return layerInfo.type === 'point' 
-                                    ? L.circleMarker(latlng, {
-                                        radius: 5,
-                                        color: layerInfo.color || 'blue',
-                                        fillOpacity: 0.8
-                                    })
-                                    : undefined;
-                            },
-                            style: layerInfo.type === 'polygon' ? {
-                                color: layerInfo.color || 'blue'
-                            } : undefined,
-                            onEachFeature: (feature, layer) => {
-                                const properties = Object.entries(feature.properties || {})
-                                    .map(([key, value]) => `<b>${key}:</b> ${value}`)
-                                    .join('<br>');
-                                layer.bindPopup(`<b>${layerInfo.name}</b><br>${properties}`);
-                            }
-                        });
-
-                        // Store layer for overlay and searching
-                        overlayMaps[layerInfo.name] = layer;
-                        loadedLayers[layerInfo.name] = geojson;
-
-                        // Populate the select dropdown
-                        const selectLayer = document.querySelector('#select-layer');
-                        const option = document.createElement('option');
-                        option.value = layerInfo.name;
-                        option.textContent = layerInfo.name;
-                        selectLayer.appendChild(option);
-
-                        return layer;
-                    });
+    const layerPromises = dataJson.geojsonLayers.map(layerInfo => {
+        return fetch(layerInfo.link)
+            .then(response => {
+                if (!response.ok) throw new Error(`Failed to load ${layerInfo.link}`);
+                return response.json();
+            })
+            .then(geojson => {
+                const layer = L.geoJSON(geojson, {
+                    pointToLayer: (feature, latlng) => {
+                        return layerInfo.type === 'point' 
+                            ? L.circleMarker(latlng, {
+                                radius: 5,
+                                color: layerInfo.color || 'blue',
+                                fillOpacity: 0.8
+                            })
+                            : undefined;
+                    },
+                    style: layerInfo.type === 'polygon' ? {
+                        color: layerInfo.color || 'blue'
+                    } : undefined,
+                    onEachFeature: (feature, layer) => {
+                        const properties = Object.entries(feature.properties || {})
+                            .map(([key, value]) => `<b>${key}:</b> ${value}`)
+                            .join('<br>');
+                        layer.bindPopup(`<b>${layerInfo.name}</b><br>${properties}`);
+                    }
+                });
+                // Store layer for overlay and searching
+                overlayMaps[layerInfo.name] = layer;
+                loadedLayers[layerInfo.name] = geojson;
+                // Populate the select dropdown
+                 const selectLayer = document.querySelector('#select-layer');
+                // Check if the option already exists before adding
+                if (![...selectLayer.options].some(option => option.value === layerInfo.name)) {
+                    const option = document.createElement('option');
+                    option.value = layerInfo.name; // Assign the layer name as the value
+                    option.textContent = layerInfo.name; // Display the layer name as the option text
+                    selectLayer.appendChild(option); // Add the option to the select element
+                } 
+                return layer;
             });
-
-            return Promise.all(layerPromises);
-        });
+    });
+    return Promise.all(layerPromises);
 }
-
 // Function to add the layer control
 function layerControl() {
-    L.control.layers(baseMaps, overlayMaps).addTo(map);
+  L.control.layers(baseMaps, overlayMaps).addTo(map);
 }
+// Initialize and load the layers
+loadLayers().catch(error => console.error(error));
 
 
 // Search functionality
