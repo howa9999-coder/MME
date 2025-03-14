@@ -23,7 +23,7 @@
   }
   /*layer control*/
   .leaflet-control-layers {
-    top: 145px !important; /* Set the exact top position */
+    top: 20px !important; /* Set the exact top position */
     right: 5px !important; /* Adjust the left position if needed */
 }
 /* Header Styles */
@@ -63,7 +63,15 @@
     color: white;
     font-size: 25px;
 }
-
+.icons button{
+    background-color: transparent;
+    border: none;
+    font-size: 25px;
+    color: white;
+    margin-left: 15px;
+    margin-right: 15px;
+    cursor: pointer;
+}
 /*Main*/
 
 main {
