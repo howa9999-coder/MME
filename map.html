@@ -25,6 +25,7 @@
    <!--AJAX Leaflet lbr-->
    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-ajax/2.1.0/leaflet.ajax.min.js"></script>
 
+
    <!--Geoman Pro: Drawing features-->
      
    <link rel="stylesheet" href="https://unpkg.com/@geoman-io/leaflet-geoman-free@latest/dist/leaflet-geoman.css" />  
@@ -32,6 +33,7 @@
         <!--cluster-->
         <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
   <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+
   <!--CSS FILE-->
   <link rel="stylesheet" href="css/style.css">
         <style>
@@ -51,6 +53,8 @@
             <!--Moroccan Marine Explorer-->
         </div>
         <div class="icons">
+            <button id="reset-view" ><i class="fa-solid fa-house"></i></button>
+            <button id="full-screen"><i class="fa-solid fa-up-right-and-down-left-from-center"></i></button>
             <a href="https://github.com/howa9999-coder"  target="_blank">
                 <i class="fa-brands fa-github"></i>
               </a>
@@ -70,6 +74,7 @@
                 </div>
                 <hr>
             </div>
+            <!--Destination point-->
             <div class="content-container">
                 <h3>Destination Point</h3>
                 <div class="content destination-point">
@@ -92,6 +97,50 @@
                 </div>
                 <hr>
             </div>
+            <!--Bearing-->
+            <div class="content-container">
+                <h3>Bearing</h3>
+                <div class="content destination-point">
+                    <input type="number" id="lat-a" placeholder="Lat A">
+                    <input type="number" id="lng-a" placeholder="Lng A">
+                    <input type="number" id="lat-b" placeholder="Lat B">
+                    <input type="number" id="lng-b" placeholder="Lng B">
+                    <div class="btns">
+                        <button id="bearing" onclick="bearing()"><i class="fa-solid fa-magnifying-glass"></i></button>
+                        <button id="clear-bearing-inputs" onclick="removeBearing()"><i class="fa-regular fa-trash-can"></i></button>
+                    </div>
+                    <div id="bearing-result" style="margin-top: 20px;"></div>
+
+
+                </div>
+                <hr>
+            </div>
+
+                        <!--Distance-->
+                        <div class="content-container">
+                            <h3>Distance</h3>
+                            <div class="content destination-point">
+                                <input type="number" id="lat-a-distance" placeholder="Lat A">
+                                <input type="number" id="lng-a-distance" placeholder="Lng A">
+                                <input type="number" id="lat-b-distance" placeholder="Lat B">
+                                <input type="number" id="lng-b-distance" placeholder="Lng B">
+                                <select name="" id="unit-distance">
+                                    <option value="">Select Unit</option>
+                                    <option value="nauticalmiles">nauticalmiles</option>
+                                    <option value="kilometers">kilometers</option>
+                                    <option value="miles">miles</option>
+                                </select>
+                                <div class="btns">
+                                    <button id="bearing" onclick="distance()"><i class="fa-solid fa-magnifying-glass"></i></button>
+                                    <button id="clear-bearing-inputs" onclick="removeDistance()"><i class="fa-regular fa-trash-can"></i></button>
+                                </div>
+                                <div id="distance-result" style="margin-top: 20px;"></div>
+            
+            
+                            </div>
+                            <hr>
+                        </div>
+            <!--Search data-->
             <div class="content-container">
                 <h3>Search Data</h3>
                 <div class="content search-data">
@@ -119,6 +168,7 @@
     <hr>
 
         </div>-->
+        <!--Download layer-->
             <div class="content-container">
                 <h3>Download Geojson Layer</h3>
                 <div class="content download">
@@ -126,7 +176,7 @@
                 </div>
                 <hr>
             </div>
-
+        <!--Import layer-->
             <div class="content-container">
                 <h3>Import Geojson Layer</h3>
                 <div class="content import">
@@ -143,12 +193,16 @@
 
         </aside>
         <div id="map" >
+<!--
             <button id="reset-view" style="z-index: 100000000; position: absolute; top: 15px; right: 10px; border: none; padding: 12px; border-radius: 5px; font-size: 20px; cursor: pointer;"><i class="fa-solid fa-house"></i></button>
             <button id="full-screen" style="z-index: 1000000000; position: absolute; top: 85px; right: 10px; border: none; padding: 12px; border-radius: 5px; font-size: 20px; cursor: pointer;"><i class="fa-solid fa-up-right-and-down-left-from-center"></i></button>
+            
+-->
         </div>
 
     </main>
-    <script src="js/sideBar.js"></script>
+    <script src="js/functions.js"></script>
     <script src="js/main.js"></script>
+
 </body>
 </html>
