@@ -1,5 +1,5 @@
 // Initialize the map and set the view to Casablanca
-var map = L.map('map').setView([33.5731, -7.5898], 6);
+var map = L.map('map').setView([35.5408, -5.3536], 9);
 
 // Reset view
 document.querySelector("#reset-view").addEventListener("click", function() {
@@ -11,12 +11,12 @@ document.querySelector("#reset-view").addEventListener("click", function() {
 var googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
     maxZoom: 20,
     subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
-});
+}).addTo(map);
 
 var osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-}).addTo(map);
+});
 
 var Stadia_AlidadeSmoothDark = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.{ext}', {
 	minZoom: 0,
@@ -35,7 +35,130 @@ var OpenSeaMap = L.tileLayer('https://tiles.openseamap.org/seamark/{z}/{x}/{y}.p
     attribution: 'Map data: &copy; <a href="http://www.openseamap.org">OpenSeaMap</a> contributors'
 }).addTo(map);
 
+  
+  // Add the measurement control to the map
 
+
+  var measureControl = new L.Control.PolylineMeasure({
+    position: 'topleft',
+    unit: 'metres',
+    showBearings: true,
+    clearMeasurementsOnStop: false,
+    showClearControl: true,
+    showUnitControl: true,
+    measureControlTitleOn: 'Turn on PolylineMeasure',
+    measureControlTitleOff: 'Turn off PolylineMeasure',
+    measureControlLabel: '&#8614;',
+    backgroundColor: 'white',
+    cursor: 'crosshair',
+    clearControlTitle: 'Clear Measurements',
+    unitControlTitle: {
+      text: 'Change Units',
+      metres: 'Meters',
+      kilometres: 'Kilometers',
+      feet: 'Feet',
+      landmiles: 'Miles (Land)',
+      nauticalmiles: 'Nautical Miles',
+      yards: 'Yards',
+      surveyfeet: 'Survey Feet',
+      surveychains: 'Survey Chains',
+      surveylinks: 'Survey Links',
+      surveymiles: 'Survey Miles'
+    }
+  });
+  
+  measureControl.addTo(map);
+
+//////////////////DRAW PLUG IN //////////////////////////////////////////////////////////
+// Initialize draw controls with dynamic color
+var drawControl = map.pm.addControls({
+  position: 'topleft',
+  drawCircle: true,
+  drawRectangle: true,
+  drawPolygon: true,
+  drawMarker: true,
+  drawCircleMarker: true,
+  drawPolyline: true,
+  cutPolygon: true,
+  removalMode: true,
+  editMode: true,
+  dragMode: true,
+  pinningOption: true,
+  snappingOption: true,
+  snapping: {}, // Configure if needed
+  tooltips: true,
+  templineStyle: {
+    color: 'green',
+    dashArray: '5,5',
+  },
+  hintlineStyle: {
+    color: 'white',
+    dashArray: '1,5',
+  },
+  pathOptions: {
+    color: "blue", // Use selected color
+    fillColor: "blue", // Same for fill (adjust if needed)
+    fillOpacity: 0.4,
+  },
+});
+
+// Disable drawing mode for circles and markers by default (if needed)
+map.pm.disableDraw('Circle');
+map.pm.disableDraw('Marker');
+
+// Create a layer group for drawn shapes
+var drawLayer = L.layerGroup().addTo(map);
+
+
+// Add new shapes to the layer group 
+map.on('pm:create', function(e) {
+  drawLayer.addLayer(e.layer);
+});
+
+  function down() {
+    if (!drawLayer || drawLayer.getLayers().length === 0) {
+      alert('No drawn elements to download!');
+      return;
+    }
+    
+    const geoJson = {
+      type: 'FeatureCollection',
+      features: drawLayer.getLayers().map(layer => {
+        // For markers
+        if (layer instanceof L.Marker) {
+          return {
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: [layer.getLatLng().lng, layer.getLatLng().lat]
+            },
+            properties: layer.feature?.properties || {}
+          };
+        }
+        
+        // For other layers
+        const geojson = layer.toGeoJSON();
+        if (layer.feature?.properties) {
+          geojson.properties = {
+            ...geojson.properties,
+            ...layer.feature.properties
+          };
+        }
+        return geojson;
+      })
+    };
+    
+    // Create a download link
+    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(geoJson, null, 2));
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute('href', dataStr);
+    downloadAnchor.setAttribute('download', 'drawn_elements.geojson');
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    document.body.removeChild(downloadAnchor);
+  }
+
+//Layer control
 var baseMaps = {
   "Stadia_AlidadeSmoothDark": Stadia_AlidadeSmoothDark,
   "CartoDB_DarkMatter": CartoDB_DarkMatter,
@@ -45,6 +168,7 @@ var baseMaps = {
 
 var overlayMaps = {
   "OpenSeaMap": OpenSeaMap,
+  "Drawn Layer": drawLayer,
 };
 var loadedLayers = {}; // To store loaded layers for searching
 
@@ -144,7 +268,9 @@ function loadLayers() {
 }
 // Function to add the layer control
 function layerControl() {
-  L.control.layers(baseMaps, overlayMaps).addTo(map);
+  L.control.layers(baseMaps, overlayMaps, {
+    collapsed: true  // Explicitly starts collapsed (default behavior)
+  }).addTo(map);
 }
 // Initialize and load the layers
 loadLayers().catch(error => console.error(error));
@@ -234,113 +360,5 @@ L.control.scale({metric: true, imperial: false, maxWidth: 100}).addTo(map);
 var measureControl = L.control.measure({
     position: 'bottomleft'
   });
-  
-  // Add the measurement control to the map
 
 
-  var measureControl = new L.Control.PolylineMeasure({
-    position: 'topleft',
-    unit: 'metres',
-    showBearings: true,
-    clearMeasurementsOnStop: false,
-    showClearControl: true,
-    showUnitControl: true,
-    measureControlTitleOn: 'Turn on PolylineMeasure',
-    measureControlTitleOff: 'Turn off PolylineMeasure',
-    measureControlLabel: '&#8614;',
-    backgroundColor: 'white',
-    cursor: 'crosshair',
-    clearControlTitle: 'Clear Measurements',
-    unitControlTitle: {
-      text: 'Change Units',
-      metres: 'Meters',
-      kilometres: 'Kilometers',
-      feet: 'Feet',
-      landmiles: 'Miles (Land)',
-      nauticalmiles: 'Nautical Miles',
-      yards: 'Yards',
-      surveyfeet: 'Survey Feet',
-      surveychains: 'Survey Chains',
-      surveylinks: 'Survey Links',
-      surveymiles: 'Survey Miles'
-    }
-  });
-  
-  measureControl.addTo(map);
-
-
-///////////////////DRAW PLUG IN //////////////////////////////////////////////////////////
-
-// Initialize the Geoman Pro plugin with all available controls
-var drawControl = map.pm.addControls({
-    position: 'topleft',
-    drawCircle: true,
-    drawRectangle: true,
-    drawPolygon: true,
-    drawMarker: true,
-    drawCircleMarker: true,
-    drawPolyline: true,
-    cutPolygon: true,
-    removalMode: true,
-    editMode: true,
-    dragMode: true,
-    pinningOption: true,
-    snappingOption: true,
-    snapping: {
-      // Configure snapping options if needed
-    },
-    tooltips: true,
-    templineStyle: {
-      color: 'green',
-      dashArray: '5,5',
-    },
-    hintlineStyle: {
-      color: 'white',
-      dashArray: '1,5',
-    },
-    pathOptions: {
-      color: 'red',
-      fillColor: 'blue',
-      fillOpacity: 0.4,
-    },
-  });
-  // Disable drawing mode for circles and markers by default
-  map.pm.disableDraw('Circle');
-  map.pm.disableDraw('Marker');
-  
-  // Create a layer group to hold the drawn shapes
-  var drawLayer = L.layerGroup().addTo(map);
-  
-
-  
-  
-  ///////////////////////////////////////////////////////////
-  //////////////Popup draw: GeoJson code + area/////////////
-  /////////////////////////////////////////////////////////
-  
-  var drawnPolygon;
-  
-  map.on('pm:create', function (e) {
-    var layer = e.layer;
-    drawnPolygon = layer;
-  
-    var geoJSON = layer.toGeoJSON();
-    var geoJSONString = JSON.stringify(geoJSON, null, 2);
-  
-    var downloadGeoJSONLink = '<a href="data:text/json;charset=utf-8,' + encodeURIComponent(geoJSONString) + '" download="drawn_layer.geojson">Download GeoJSON</a>';
-    var popupContent = "<div>" +  downloadGeoJSONLink + "</div>" ;
-  
-    layer.bindPopup(popupContent).openPopup();
-  });
-  
-  drawLayer.on('click', function (event) {
-    if (event.layer === drawnPolygon) {
-      event.layer.openPopup();
-    }
-  });
-  
-  map.on('overlayremove', function (event) {
-    if (event.layer === drawnPolygon) {
-      event.layer.closePopup();
-    }
-  });
