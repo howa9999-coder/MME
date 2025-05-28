@@ -1,54 +1,206 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="css/home.css">
-          <!--FontAwsome-->
-          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
-  <title>MME - Home</title>
-  <style>
-      #particles-js {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!--FontAwsome-->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
+        <!--leaflet-->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+        integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
+        crossorigin=""/>
+        <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+        integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
+        crossorigin=""></script>
+            <!-- Incluez le plugin Leaflet Measure -->
+    <script src="js/leaflet-mesure.js"></script>
+        <!--PolylineMeasure-->
+<link rel="stylesheet" href="https://ppete2.github.io/Leaflet.PolylineMeasure/Leaflet.PolylineMeasure.css" />
+<script src="https://ppete2.github.io/Leaflet.PolylineMeasure/Leaflet.PolylineMeasure.js"></script>
 
-  </style>
+<script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
+<script src="https://unpkg.com/@turf/turf@7.1.1"></script>
+   <!--Turf.js PlugIn-->
+   <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
+   <!--AJAX Leaflet lbr-->
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-ajax/2.1.0/leaflet.ajax.min.js"></script>
+
+
+   <!--Geoman Pro: Drawing features-->
+     
+   <link rel="stylesheet" href="https://unpkg.com/@geoman-io/leaflet-geoman-free@latest/dist/leaflet-geoman.css" />  
+<script src="https://unpkg.com/@geoman-io/leaflet-geoman-free@latest/dist/leaflet-geoman.min.js"></script> 
+        <!--cluster-->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
+  <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+
+  <!--CSS FILE-->
+  <link rel="stylesheet" href="css/style.css">
+        <style>
+            *{
+                padding: 0;
+                margin: 0;
+            }
+        </style>
+    <title>Moroccan Marine Explorer</title>
 </head>
 <body>
-    <div id="particles-js"></div>
-    <div class="icons">
-        <a href="https://github.com/howa9999-coder" class="icon" target="_blank">
-          <i class="fa-brands fa-github"></i>
-        </a>
-        <a href="https://www.linkedin.com/in/wahiba-adidi-b70a55255/" class="icon" target="_blank">
-            <i class="fa-brands fa-linkedin"></i>
-        </a>
-    </div>
+    <header class="header">
+        <div class="logo">
+            <button id="tools"><i class="fa-solid fa-bars"></i></i></button>
 
-        <h1  >MME</h1>
-<div class="center">
-  <h2 >
-    Moroccan Marine Explorer
- </h2>
- <p class="para" >
-    Webmapping application that offers an interactive map for seamless exploration and analysis of Morocco's maritime data. It provides a user-friendly platform to visualize, understand, and manage marine resources with precision and ease.
- </p>
- <a class="links" href="map.html" > <i class="fa-solid fa-layer-group"></i> Map <i class="fa-solid fa-arrow-right"></i> </a>
-</div>
+            <h1><a href="index.html" style="text-decoration: none; color: white;">MME</a></h1>
+            <!--Moroccan Marine Explorer-->
+        </div>
+        <div class="icons">
+            <button id="reset-view" ><i class="fa-solid fa-home"></i></button>
+            <button onclick="down()"><i class="fa-solid fa-download"></i></button>
+            <button id="full-screen"><i class="fa-solid fa-up-right-and-down-left-from-center"></i></button>
+            <a href="https://www.linkedin.com/in/wahiba-adidi-b70a55255/" target="_blank">
+                <i class="fa-brands fa-linkedin"></i>
+            </a>
+        </div>
+    </header>
+    <main>
+        <aside class="sidebar" style="padding-top: 20px;">
+            <div class="content-container">
+                <h3>Search Point</h3>
+                <div class="content search-point">
+                    <input type="number" id="lat" placeholder="Lat">
+                <input type="number" id="log" placeholder="Log">
+                <button id="search-point"><i class="fa-solid fa-magnifying-glass"></i></button>
+                </div>
+                <hr>
+            </div>
+            <!--Destination point-->
+            <div class="content-container">
+                <h3>Destination Point</h3>
+                <div class="content destination-point">
+                    <input type="number" id="lat-start" placeholder="Lat">
+                    <input type="number" id="log-start" placeholder="Log">
+                    <input type="number" id="bearing" placeholder="Bearing">
+                    <input type="number" id="distance" placeholder="Distance">
+                    <select name="" id="unit">
+                        <option value="">Select Unit</option>
+                        <option value="nauticalmiles">nauticalmiles</option>
+                        <option value="kilometers">kilometers</option>
+                        <option value="miles">miles</option>
+                    </select>
+                    <div class="btns">
+                        <button id="destination-point"><i class="fa-solid fa-magnifying-glass"></i></button>
+                        <button id="clear-destination-inputs"><i class="fa-regular fa-trash-can"></i></button>
+                    </div>
 
-       
 
-        <div class="banner">
-            <p class="tools">
-                <b>MEE</b> was developed using <b style="color: blue;">Leaflet.js</b> for mapping, <b style="color: green;">Turf.js</b> for spatial analysis,  <b style="color: yellow;">GeoJSON</b> for geographic data,  and <b style="color: blueviolet;">Particles.js</b> for visual effects.
+                </div>
+                <hr>
+            </div>
+            <!--Bearing-->
+            <div class="content-container">
+                <h3>Bearing</h3>
+                <div class="content destination-point">
+                    <input type="number" id="lat-a" placeholder="Lat A">
+                    <input type="number" id="lng-a" placeholder="Lng A">
+                    <input type="number" id="lat-b" placeholder="Lat B">
+                    <input type="number" id="lng-b" placeholder="Lng B">
+                    <div class="btns">
+                        <button id="bearing" onclick="bearing()"><i class="fa-solid fa-magnifying-glass"></i></button>
+                        <button id="clear-bearing-inputs" onclick="removeBearing()"><i class="fa-regular fa-trash-can"></i></button>
+                    </div>
+                    <div id="bearing-result" style="margin-top: 20px;"></div>
 
-            </p>
-          </div>
 
-    <script src="js/particles.js"></script>
-    <script src="js/app.js"></script>
+                </div>
+                <hr>
+            </div>
+
+                        <!--Distance-->
+                        <div class="content-container">
+                            <h3>Distance</h3>
+                            <div class="content destination-point">
+                                <input type="number" id="lat-a-distance" placeholder="Lat A">
+                                <input type="number" id="lng-a-distance" placeholder="Lng A">
+                                <input type="number" id="lat-b-distance" placeholder="Lat B">
+                                <input type="number" id="lng-b-distance" placeholder="Lng B">
+                                <select name="" id="unit-distance">
+                                    <option value="">Select Unit</option>
+                                    <option value="nauticalmiles">nauticalmiles</option>
+                                    <option value="kilometers">kilometers</option>
+                                    <option value="miles">miles</option>
+                                </select>
+                                <div class="btns">
+                                    <button id="bearing" onclick="distance()"><i class="fa-solid fa-magnifying-glass"></i></button>
+                                    <button id="clear-bearing-inputs" onclick="removeDistance()"><i class="fa-regular fa-trash-can"></i></button>
+                                </div>
+                                <div id="distance-result" style="margin-top: 20px;"></div>
+            
+            
+                            </div>
+                            <hr>
+                        </div>
+            <!--Search data-->
+            <div class="content-container">
+                <h3>Search Data</h3>
+                <div class="content search-data">
+                    <select name="" id="select-layer">
+                        <option value="">Select Layer</option>
+                    </select>
+                    <input  type="text" placeholder="Search" id="search">
+                    <button id="clear-result"><i class="fa-regular fa-trash-can"></i></button>
+                    <div id="result"></div>
+                </div>
+                <hr>
+            </div>
+     <!--       <div class="content-container">
+                <h3>Filter Data</h3>
+                <div class="content filter">
+                    <input type="text" class="form-control mt-2" id="lat-center" placeholder="Latitude">
+                    <input type="text" class="form-control mt-2" id="lng-center" placeholder="Longitude">
+                    <input type="text" class="form-control mt-2" id="radius" placeholder="Rayon en Km">
+                <div class="btns">
+                <button type="submit" class="draw "   id="draw-circle"><i class="fa-regular fa-circle-check"></i></button>
+                <button type="reset" class="clear"   id="clear-circle"><i class="fa-regular fa-trash-can"></i></button>
+                </div>
+                <div class="layer-select"></div>
+        </div>
+    <hr>
+
+        </div>-->
+        <!--Download layer-->
+            <div class="content-container">
+                <h3>Download Geojson Layer</h3>
+                <div class="content download">
+                    <!--<a href="json/myGeojsonLayers/AMP/AMP_Maroc.geojson" download="AMP_Maroc.geojson"></a>-->
+                </div>
+                <hr>
+            </div>
+        <!--Import layer-->
+            <div class="content-container">
+                <h3>Import Geojson Layer</h3>
+                <div class="content import">
+                    <button id="import-geojson">Import GeoJSON</button>
+                    <input type="file" id="geojson-file" style="display: none;" accept=".geojson, .json" />
+                    <button id="delete-imported-file"><i class="fa-regular fa-trash-can"></i></button>
+
+                </div>
+                <hr>
+            </div>
+
+
+            </div>
+
+        </aside>
+        <div id="map" >
+<!--
+            <button id="reset-view" style="z-index: 100000000; position: absolute; top: 15px; right: 10px; border: none; padding: 12px; border-radius: 5px; font-size: 20px; cursor: pointer;"><i class="fa-solid fa-house"></i></button>
+            <button id="full-screen" style="z-index: 1000000000; position: absolute; top: 85px; right: 10px; border: none; padding: 12px; border-radius: 5px; font-size: 20px; cursor: pointer;"><i class="fa-solid fa-up-right-and-down-left-from-center"></i></button>
+            
+-->
+        </div>
+
+    </main>
+    <script src="js/functions.js"></script>
+    <script src="js/main.js"></script>
+
 </body>
 </html>
